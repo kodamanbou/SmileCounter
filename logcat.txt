@@ -1,0 +1,44 @@
+08-23 06:00:44.735 15316-15316/? I/art: Late-enabling -Xcheck:jni
+08-23 06:00:44.784 15316-15316/? W/System: ClassLoader referenced unknown path: /data/app/com.lifeistech.android.SmileCounter-1/lib/arm
+08-23 06:00:44.830 15316-15316/com.lifeistech.android.SmileCounter W/art: Before Android 4.1, method android.graphics.PorterDuffColorFilter android.support.graphics.drawable.VectorDrawableCompat.updateTintFilter(android.graphics.PorterDuffColorFilter, android.content.res.ColorStateList, android.graphics.PorterDuff$Mode) would have incorrectly overridden the package-private method in android.graphics.drawable.Drawable
+08-23 06:00:45.069 15316-15346/com.lifeistech.android.SmileCounter I/Adreno: QUALCOMM build                   : 7d18700, I8ee426a9a2
+                                                                             Build Date                       : 10/07/16
+                                                                             OpenGL ES Shader Compiler Version: XE031.09.00.03
+                                                                             Local Branch                     : mybranch22308589
+                                                                             Remote Branch                    : quic/LA.BR.1.3.6_rb1.6
+                                                                             Remote Branch                    : NONE
+                                                                             Reconstruct Branch               : NOTHING
+08-23 06:00:45.078 15316-15346/com.lifeistech.android.SmileCounter I/OpenGLRenderer: Initialized EGL, version 1.4
+08-23 06:00:45.078 15316-15346/com.lifeistech.android.SmileCounter D/OpenGLRenderer: Swap behavior 1
+08-23 06:00:46.393 15316-15316/com.lifeistech.android.SmileCounter D/selectedImageUri: /share_name/camera_test.jpg
+08-23 06:00:53.991 15316-15316/com.lifeistech.android.SmileCounter D/Bitmap_Test: /share_name/camera_test.jpg
+08-23 06:00:53.992 15316-15316/com.lifeistech.android.SmileCounter E/BitmapFactory: Unable to decode stream: java.io.FileNotFoundException: /share_name/camera_test.jpg (No such file or directory)
+08-23 06:00:53.992 15316-15316/com.lifeistech.android.SmileCounter D/Bitmap_null: NULL!!
+08-23 06:00:53.994 15316-15316/com.lifeistech.android.SmileCounter D/AndroidRuntime: Shutting down VM
+08-23 06:00:53.995 15316-15316/com.lifeistech.android.SmileCounter E/AndroidRuntime: FATAL EXCEPTION: main
+                                                                                     Process: com.lifeistech.android.SmileCounter, PID: 15316
+                                                                                     java.lang.RuntimeException: Unable to start activity ComponentInfo{com.lifeistech.android.SmileCounter/com.lifeistech.android.SmileCounter.FaceDetectActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'int android.graphics.Bitmap.getWidth()' on a null object reference
+                                                                                         at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2659)
+                                                                                         at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2724)
+                                                                                         at android.app.ActivityThread.-wrap12(ActivityThread.java)
+                                                                                         at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1473)
+                                                                                         at android.os.Handler.dispatchMessage(Handler.java:102)
+                                                                                         at android.os.Looper.loop(Looper.java:154)
+                                                                                         at android.app.ActivityThread.main(ActivityThread.java:6123)
+                                                                                         at java.lang.reflect.Method.invoke(Native Method)
+                                                                                         at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:867)
+                                                                                         at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:757)
+                                                                                      Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'int android.graphics.Bitmap.getWidth()' on a null object reference
+                                                                                         at com.lifeistech.android.SmileCounter.FaceDetectActivity.onCreate(FaceDetectActivity.java:78)
+                                                                                         at android.app.Activity.performCreate(Activity.java:6672)
+                                                                                         at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1140)
+                                                                                         at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2612)
+                                                                                         at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2724) 
+                                                                                         at android.app.ActivityThread.-wrap12(ActivityThread.java) 
+                                                                                         at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1473) 
+                                                                                         at android.os.Handler.dispatchMessage(Handler.java:102) 
+                                                                                         at android.os.Looper.loop(Looper.java:154) 
+                                                                                         at android.app.ActivityThread.main(ActivityThread.java:6123) 
+                                                                                         at java.lang.reflect.Method.invoke(Native Method) 
+                                                                                         at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:867) 
+                                                                                         at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:757) 
