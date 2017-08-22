@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcel;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
@@ -35,8 +36,10 @@ import com.lifeistech.android.SmileCounter.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 
 public class IndexActivity extends AppCompatActivity {
@@ -147,14 +150,15 @@ public class IndexActivity extends AppCompatActivity {
     public void picture(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //TODO FileProvider で保存・参照する
-        File file = new File(Environment.getExternalStorageDirectory().getPath());
+        File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+        File imageFile = new File(file, "camera_test.jpg");
         sdPath = file.getPath();
 
         if (!file.exists()) {
             file.mkdirs();
         }
 
-        selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, "/camera_test.jpg"));
+        selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri);
         startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
 
@@ -165,7 +169,7 @@ public class IndexActivity extends AppCompatActivity {
         isLooking = true;
 
         fileNames = new ArrayList<>();
-        File[] files = new File(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(Environment.getExternalStorageDirectory() + "/camera_test.jpg")).getPath()).listFiles();
+        File[] files = new File(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(Environment.getExternalStorageDirectory() + "/SmileCounter/" + "/camera_test.jpg")).getPath()).listFiles();
 
         if (files != null) {
             Log.d("JPG_DIRECTORY", "" + files[0].toString());

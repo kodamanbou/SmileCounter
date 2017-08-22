@@ -60,9 +60,10 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         //読み込んだ画像をビットマップに変換する------FileProvider を使う
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/SmileCounter" + "/camera_test.jpg");
+        File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+        File imageFile = new File(file, "camera_test.jpg");
 
-        String bitUriString = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file).getPath();
+        String bitUriString = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
         Log.d("Bitmap_Test", bitUriString);
 
@@ -136,10 +137,11 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         String bitmapPath = "";
         try {
-            bitmapPath = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", new File(Environment.getExternalStorageDirectory() + "/SmileCounter/")).getPath();
+            File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+            bitmapPath = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", new File(file, "smilecounter_" + s + ".jpg")).getPath();
 
             FileOutputStream fos = null;
-            fos = new FileOutputStream(bitmapPath + "/smilecounter_" + s + ".jpg");
+            fos = new FileOutputStream(bitmapPath);
             fos.write(bytes);
             fos.flush();
             fos.close();
@@ -149,7 +151,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, IndexActivity.class);
         intent.putExtra("SCORE", score);
-        intent.putExtra("SCORE_IMAGE", bitmapPath + "/smilecounter_" + s + ".jpg");
+        intent.putExtra("SCORE_IMAGE", bitmapPath);
         startActivity(intent);
     }
 }
