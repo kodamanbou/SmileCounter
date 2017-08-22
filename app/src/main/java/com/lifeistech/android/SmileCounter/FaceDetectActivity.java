@@ -62,18 +62,11 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         File file = new File(Environment.getExternalStorageDirectory() + "/SmileCounter" + "/camera_test.jpg");
 
-        Uri bitUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file);
+        String bitUriString = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file).getPath();
 
-        Log.d("Bitmap_Test", bitUri.getPath());
+        Log.d("Bitmap_Test", bitUriString);
 
-        try {
-            // 71行目でstreamがnullになってしまう
-            InputStream stream = getContentResolver().openInputStream(bitUri);
-            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
-            stream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        bitmap = BitmapFactory.decodeFile(bitUriString);
 
         if (bitmap == null) {
             Log.d("Bitmap_null", "NULL!!");
@@ -143,7 +136,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         String bitmapPath = "";
         try {
-            bitmapPath = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", new File(Environment.getExternalStorageDirectory().getPath())).getPath();
+            bitmapPath = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", new File(Environment.getExternalStorageDirectory() + "/SmileCounter/")).getPath();
 
             FileOutputStream fos = null;
             fos = new FileOutputStream(bitmapPath + "/smilecounter_" + s + ".jpg");

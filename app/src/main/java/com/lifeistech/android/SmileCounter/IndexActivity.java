@@ -1,17 +1,22 @@
 package com.lifeistech.android.SmileCounter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -142,15 +147,18 @@ public class IndexActivity extends AppCompatActivity {
     public void picture(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //TODO FileProvider で保存・参照する
-        File file = new File(Environment.getExternalStorageDirectory(), "/SmileCounter" + "camera_test.jpg");
+        File file = new File(Environment.getExternalStorageDirectory() + "/SmileCounter" + "/camera_test.jpg");
+        sdPath = file.getPath();
 
-        if(!file.exists()) {
+        if (!file.exists()) {
             file.mkdirs();
         }
 
-        selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider" , file);
+        selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file);
+        Log.d("uri???", selectedImageUri.getPath());
         intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri);
         startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
+
     }
 
     public void look(View v) {
@@ -158,8 +166,7 @@ public class IndexActivity extends AppCompatActivity {
         isLooking = true;
 
         fileNames = new ArrayList<>();
-        sdPath = Environment.getExternalStorageDirectory().getPath() + "/SmileCounter/";
-        File[] files = new File(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(Environment.getExternalStorageDirectory().getPath() + "/SmileCounter/")).getPath()).listFiles();
+        File[] files = new File(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(Environment.getExternalStorageDirectory() + "/SmileCounter" + "/camera_test.jpg")).getPath()).listFiles();
 
         if (files != null) {
             Log.d("JPG_DIRECTORY", "" + files[0].toString());
@@ -261,4 +268,5 @@ public class IndexActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
 }
