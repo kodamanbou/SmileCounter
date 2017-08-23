@@ -30,7 +30,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -143,14 +145,14 @@ public class FaceDetectActivity extends AppCompatActivity {
         String bitmapPath = "";
         try {
             File file = new File(getFilesDir(), "SmileCounter");
-            File imageFile = new File(file, "smilecounter_" + s + ".jpg");
+            File imageFile = new File(file, "smilecounter_" + s + ".jpgile");
             bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
-            FileOutputStream fos = null;
-            fos = new FileOutputStream(bitmapPath);
-            fos.write(bytes);
-            fos.flush();
-            fos.close();
+            OutputStream stream = null;
+            stream = getContentResolver().openOutputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+            stream.write(bytes);
+            stream.flush();
+            stream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

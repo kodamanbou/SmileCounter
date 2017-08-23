@@ -34,8 +34,10 @@ import android.widget.Toast;
 
 import com.lifeistech.android.SmileCounter.R;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -63,7 +65,6 @@ public class IndexActivity extends AppCompatActivity {
 
     private boolean isLooking = false;
     private boolean isChanged = false;
-    private String sdPath = "";
 
     //フリックを検知するための基準
     private static final int SWIPE_MAX_OFF_PATH = 250;
@@ -153,7 +154,6 @@ public class IndexActivity extends AppCompatActivity {
         //TODO FileProvider で保存・参照する
         File file = new File(getFilesDir(), "SmileCounter");
         File imageFile = new File(file, "camera_test.jpg");
-        sdPath = imageFile.getPath();
 
         if (!file.exists()) {
             file.mkdirs();
@@ -199,7 +199,16 @@ public class IndexActivity extends AppCompatActivity {
             clearButton = (Button) findViewById(R.id.clear_button);
 
             if (iterator.hasNext()) {
-                galleryView.setImageBitmap(BitmapFactory.decodeFile(sdPath + iterator.next()));
+
+                Bitmap bitmap = null;
+
+                try {
+                    InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                    bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                galleryView.setImageBitmap(bitmap);
                 numberTextView.setText(String.valueOf(iterator.nextIndex()) + "/" + fileNames.size());
             }
 
@@ -245,8 +254,19 @@ public class IndexActivity extends AppCompatActivity {
                 } else if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     // 右から左
                     if (iterator.hasNext()) {
+
+                        Bitmap bitmap = null;
+                        File file = new File(getFilesDir(), "SmileCounter");
+
+                        try {
+                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         numberTextView.setText(String.valueOf(iterator.nextIndex() + 1) + "/" + fileNames.size());
-                        galleryView.setImageBitmap(BitmapFactory.decodeFile(sdPath + iterator.next()));
+                        galleryView.setImageBitmap(bitmap);
                     } else {
                         //TODO 行き止まりアニメーション
                     }
@@ -254,8 +274,19 @@ public class IndexActivity extends AppCompatActivity {
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     // 左から右
                     if (iterator.hasPrevious()) {
+
+                        Bitmap bitmap = null;
+                        File file = new File(getFilesDir(), "SmileCounter");
+
+                        try {
+                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
+                            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
-                        galleryView.setImageBitmap(BitmapFactory.decodeFile(sdPath + iterator.previous()));
+                        galleryView.setImageBitmap(bitmap);
                     } else {
                         //TODO 行き止まりアニメーション
                     }
