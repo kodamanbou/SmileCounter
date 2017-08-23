@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -177,9 +178,13 @@ public class IndexActivity extends AppCompatActivity {
 
         Uri testUri;
 
+        File[] files = null;
         fileNames = new ArrayList<>();
         testUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile);
+
+        /* トラブルの原因
         File[] files = new File(URI.create(testUri.toString())).listFiles();
+        */
 
         if (files != null) {
             Log.d("JPG_DIRECTORY", "" + files[0].toString());
