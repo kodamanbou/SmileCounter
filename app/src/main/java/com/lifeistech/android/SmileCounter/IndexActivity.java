@@ -49,7 +49,7 @@ public class IndexActivity extends AppCompatActivity {
 
     private final String PREF_KEY = "DataSave";
 
-    //TODO 記録の表示及びその他の機能追加
+    // 記録の表示及びその他の機能追加
     int score;
     private TextView textView;
     private Button button;
@@ -101,7 +101,14 @@ public class IndexActivity extends AppCompatActivity {
         Bitmap bitmap = null;
 
         if (bitPath != null) {
-            bitmap = BitmapFactory.decodeFile(bitPath);
+            try {
+                File file = new File(getFilesDir(), "SmileCounter");
+                File imageFile = new File(file, bitPath);
+                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                bitmap = BitmapFactory.decodeStream(stream);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
@@ -122,14 +129,33 @@ public class IndexActivity extends AppCompatActivity {
         } else if (highestScore == score && !(isChanged)) {
             if (!bitString.equals("")) {
                 bitPath = data.getString("ScoreImage", "");
-                bitmap = BitmapFactory.decodeFile(bitPath);
+                File file = new File(getFilesDir(), "SmileCounter");
+                File imageFile = new File(file, bitPath);
+
+                try {
+                    InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                    bitmap = BitmapFactory.decodeStream(stream);
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                }
+
                 imageView.setImageBitmap(bitmap);
             } else {
                 bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.droidkun);
                 imageView.setImageBitmap(bitmap);
             }
         } else if (highestScore > score) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(bitString));
+
+            File file = new File(getFilesDir(), "SmileCounter");
+            File imageFile = new File(file, bitString);
+
+            try {
+                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                imageView.setImageBitmap(BitmapFactory.decodeStream(stream));
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
+
             SharedPreferences.Editor editor = data.edit();
             editor.putString("ScoreImage", bitString);
             editor.apply();
@@ -152,7 +178,7 @@ public class IndexActivity extends AppCompatActivity {
     public void picture(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        //TODO FileProvider で保存・参照する
+        // FileProvider で保存・参照する
         File file = new File(getFilesDir(), "SmileCounter");
         File imageFile = new File(file, "camera_test.jpg");
 
@@ -180,7 +206,7 @@ public class IndexActivity extends AppCompatActivity {
 
         File[] files = null;
         fileNames = new ArrayList<>();
-        testUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile);
+        testUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file);
 
         /* トラブルの原因
         File[] files = new File(URI.create(testUri.toString())).listFiles();

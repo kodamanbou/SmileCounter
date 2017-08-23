@@ -109,19 +109,19 @@ public class FaceDetectActivity extends AppCompatActivity {
                 score = score + 5;
                 j++;
                 if (j >= 3) {
-                    score *= 2;
+                    score += score / 2;
                 }
             } else if (smilingProbability > 0.5f && smilingProbability <= 0.7f) {
                 score = score + 7;
                 j++;
                 if (j >= 3) {
-                    score *= 2;
+                    score += score / 2;
                 }
             } else if (smilingProbability > 0.7f) {
                 score = score + 10;
                 j++;
                 if (j >= 3) {
-                    score *= 2;
+                    score += score / 2;
                 }
             }
 
@@ -142,10 +142,11 @@ public class FaceDetectActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.JAPAN);
         String s = sdf.format(date);
 
+        //TODO SharedPreferencesを使って、ファイル名を記録する
         String bitmapPath = "";
         try {
             File file = new File(getFilesDir(), "SmileCounter");
-            File imageFile = new File(file, "smilecounter_" + s + ".jpgile");
+            File imageFile = new File(file, "smilecounter_" + s + ".jpg");
             bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
             OutputStream stream = null;
@@ -159,7 +160,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, IndexActivity.class);
         intent.putExtra("SCORE", score);
-        intent.putExtra("SCORE_IMAGE", bitmapPath);
+        intent.putExtra("SCORE_IMAGE", "smilecounter_" + s + ".jpg");
         startActivity(intent);
     }
 }
