@@ -60,14 +60,19 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         //読み込んだ画像をビットマップに変換する------FileProvider を使う
 
-        File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+        File file = new File(getFilesDir(), "SmileCounter");
         File imageFile = new File(file, "camera_test.jpg");
 
         String bitUriString = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
         Log.d("Bitmap_Test", bitUriString);
 
-        bitmap = BitmapFactory.decodeFile(bitUriString);
+        try {
+            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (bitmap == null) {
             Log.d("Bitmap_null", "NULL!!");
@@ -137,8 +142,9 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         String bitmapPath = "";
         try {
-            File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
-            bitmapPath = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", new File(file, "smilecounter_" + s + ".jpg")).getPath();
+            File file = new File(getFilesDir(), "SmileCounter");
+            File imageFile = new File(file, "smilecounter_" + s + ".jpg");
+            bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
             FileOutputStream fos = null;
             fos = new FileOutputStream(bitmapPath);
