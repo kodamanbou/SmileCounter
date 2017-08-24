@@ -1,6 +1,8 @@
 package com.lifeistech.android.SmileCounter;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -34,7 +36,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class FaceDetectActivity extends AppCompatActivity {
@@ -43,6 +47,11 @@ public class FaceDetectActivity extends AppCompatActivity {
     private TextView textView;
     int score = 0;
     Bitmap bitmap;
+
+    private final String PREF_KEY = "DataSave";
+    private final String FILE_NAME = "FileName";
+
+    private static ArrayList<String> files = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +136,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
             tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
         }
+
         imageView.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
         textView.setText(String.valueOf(score) + "pt");
 
@@ -157,6 +167,25 @@ public class FaceDetectActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        files.add("smilecounter_" + s + ".jpg");
+
+        SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        editor.putInt("smilecounter_" + s + ".jpg", score);
+
+        String text = data.getString(FILE_NAME, null);
+
+        if (text != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(text).append(",").append(files.get(files.size() - 1));
+            text = sb.toString();
+            editor.putString(FILE_NAME, text);
+        } else {
+            editor.putString(FILE_NAME, files.get(files.size() - 1));
+        }
+
+        editor.apply();
 
         Intent intent = new Intent(this, IndexActivity.class);
         intent.putExtra("SCORE", score);

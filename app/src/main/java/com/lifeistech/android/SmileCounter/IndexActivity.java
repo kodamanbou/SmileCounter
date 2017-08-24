@@ -12,6 +12,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -23,7 +25,9 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -48,6 +52,7 @@ import java.util.ListIterator;
 public class IndexActivity extends AppCompatActivity {
 
     private final String PREF_KEY = "DataSave";
+    private final String FILE_NAME = "FileName";
 
     // 記録の表示及びその他の機能追加
     int score;
@@ -104,8 +109,10 @@ public class IndexActivity extends AppCompatActivity {
             try {
                 File file = new File(getFilesDir(), "SmileCounter");
                 File imageFile = new File(file, bitPath);
+                BitmapFactory.Options options = new BitmapFactory.Options();
                 InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
                 bitmap = BitmapFactory.decodeStream(stream);
+                bitmap = resizeBitmap(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -135,6 +142,7 @@ public class IndexActivity extends AppCompatActivity {
                 try {
                     InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
                     bitmap = BitmapFactory.decodeStream(stream);
+                    bitmap = resizeBitmap(bitmap);
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
@@ -151,7 +159,7 @@ public class IndexActivity extends AppCompatActivity {
 
             try {
                 InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
-                imageView.setImageBitmap(BitmapFactory.decodeStream(stream));
+                imageView.setImageBitmap(resizeBitmap(BitmapFactory.decodeStream(stream)));
             } catch (Exception ee) {
                 ee.printStackTrace();
             }
@@ -178,7 +186,7 @@ public class IndexActivity extends AppCompatActivity {
     public void picture(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        // FileProvider で保存・参照する
+        //FileProvider で保存・参照する
         File file = new File(getFilesDir(), "SmileCounter");
         File imageFile = new File(file, "camera_test.jpg");
 
@@ -204,21 +212,16 @@ public class IndexActivity extends AppCompatActivity {
 
         Uri testUri;
 
-        File[] files = null;
         fileNames = new ArrayList<>();
-        testUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", file);
 
-        /* トラブルの原因
-        File[] files = new File(URI.create(testUri.toString())).listFiles();
-        */
+        SharedPreferences preferences = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+        String names = preferences.getString(FILE_NAME, null);
 
-        if (files != null) {
-            Log.d("JPG_DIRECTORY", "" + files[0].toString());
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isFile() && files[i].getName().endsWith(".jpg")) {
-                    fileNames.add(files[i].getName());
-                    Log.d("JPG_DIRECTORY", fileNames.get(i));
-                }
+        if (names != null) {
+            String[] files = names.split(",");
+            for (String s : files) {
+                fileNames.add(s);
+                Log.d("JPEG_DIRECTORY", s);
             }
         }
 
@@ -299,7 +302,19 @@ public class IndexActivity extends AppCompatActivity {
                         numberTextView.setText(String.valueOf(iterator.nextIndex() + 1) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
                     } else {
-                        //TODO 行き止まりアニメーション
+                        iterator = fileNames.listIterator();
+                        Bitmap bitmap = null;
+                        File file = new File(getFilesDir(), "SmileCounter");
+
+                        try {
+                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        numberTextView.setText(String.valueOf(iterator.nextIndex() + 1) + "/" + fileNames.size());
+                        galleryView.setImageBitmap(bitmap);
                     }
                     return true;
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
@@ -319,7 +334,19 @@ public class IndexActivity extends AppCompatActivity {
                         numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
                     } else {
-                        //TODO 行き止まりアニメーション
+                        iterator = fileNames.listIterator(fileNames.size());
+                        Bitmap bitmap = null;
+                        File file = new File(getFilesDir(), "SmileCounter");
+
+                        try {
+                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
+                            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
+                        galleryView.setImageBitmap(bitmap);
                     }
                     return true;
                 }
@@ -342,6 +369,49 @@ public class IndexActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FaceDetectActivity.class);
             startActivity(intent);
         }
+    }
+
+    private Bitmap resizeBitmap(Bitmap src) {
+
+        final int dispWidth = 480,
+                  dispHight = 800;
+
+        int srcWidth = src.getWidth(); // 元画像のwidth
+        int srcHeight = src.getHeight(); // 元画像のheight
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point p = new Point();
+        display.getSize(p);
+
+        Log.d("BITMAP_SIZE", "w : " + String.valueOf(srcWidth) + "h : " + String.valueOf(srcHeight));
+        Log.d("DISPLAY_SIZE", "w : " + String.valueOf(p.x) + " " + "h : " + String.valueOf(p.y));
+
+        // 画面サイズを取得する
+        Matrix matrix = new Matrix();
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        float screenWidth = (float) metrics.widthPixels;
+        float screenHeight = (float) metrics.heightPixels;
+        Log.d("SCREEN_SIZE", "screenWidth = " + String.valueOf(screenWidth)
+                + " px, screenHeight = " + String.valueOf(screenHeight) + " px");
+
+        float widthScale = screenWidth * 0.5f / srcWidth;
+        float heightScale = screenHeight * 0.5f / srcHeight;
+
+        if (widthScale > heightScale) {
+            matrix.postScale(heightScale, heightScale);
+        } else {
+            matrix.postScale(widthScale, widthScale);
+        }
+        // リサイズ
+        Bitmap dst = Bitmap.createBitmap(src, 0, 0, srcWidth, srcHeight, matrix, true);
+        int dstWidth = dst.getWidth(); // 変更後画像のwidth
+        int dstHeight = dst.getHeight(); // 変更後画像のheight
+
+        Log.d("DST_BITMAP_SIZE", "w : " + String.valueOf(dstWidth) + ", h : " + String.valueOf(dstHeight));
+
+        src = null;
+        return dst;
     }
 
 }
