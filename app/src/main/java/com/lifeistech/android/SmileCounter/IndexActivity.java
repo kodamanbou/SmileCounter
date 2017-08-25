@@ -324,6 +324,8 @@ public class IndexActivity extends AppCompatActivity {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
+                        numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
+
                         try {
                             InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
                             bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
@@ -333,7 +335,6 @@ public class IndexActivity extends AppCompatActivity {
 
                         Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
 
-                        numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
 
                     } else {
@@ -341,8 +342,10 @@ public class IndexActivity extends AppCompatActivity {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
+                        numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
+
                         try {
-                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
                             bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -350,7 +353,6 @@ public class IndexActivity extends AppCompatActivity {
 
                         Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
 
-                        numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
                     }
                     return true;
