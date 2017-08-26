@@ -152,7 +152,6 @@ public class FaceDetectActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.JAPAN);
         String s = sdf.format(date);
 
-        //TODO SharedPreferencesを使って、ファイル名を記録する
         String bitmapPath = "";
         try {
             File file = new File(getFilesDir(), "SmileCounter");
@@ -181,8 +180,10 @@ public class FaceDetectActivity extends AppCompatActivity {
             sb.append(text).append(",").append(files.get(files.size() - 1));
             text = sb.toString();
             editor.putString(FILE_NAME, text);
+            editor.putInt(files.get(files.size() - 1), score);
         } else {
             editor.putString(FILE_NAME, files.get(files.size() - 1));
+            editor.putInt(files.get(files.size() - 1), score);
         }
 
         editor.apply();

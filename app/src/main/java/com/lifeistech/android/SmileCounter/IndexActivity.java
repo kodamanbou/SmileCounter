@@ -65,9 +65,12 @@ public class IndexActivity extends AppCompatActivity {
     private GestureDetector gestureDetector;
     private TextView labelTextView;
     private TextView numberTextView;
+    private TextView currentScore;
 
     private ListIterator<String> iterator;
     private ArrayList<String> fileNames;
+    private ArrayList<Integer> scores;
+    private ListIterator<Integer> integerListIterator;
 
     private boolean isLooking = false;
     private boolean isChanged = false;
@@ -213,6 +216,7 @@ public class IndexActivity extends AppCompatActivity {
         Uri testUri;
 
         fileNames = new ArrayList<>();
+        scores = new ArrayList<>();
 
         SharedPreferences preferences = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
         String names = preferences.getString(FILE_NAME, null);
@@ -225,12 +229,24 @@ public class IndexActivity extends AppCompatActivity {
             }
         }
 
+        for (String s : fileNames) {
+            SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+            scores.add(data.getInt(s, 0));
+        }
+
         if (fileNames.size() > 0) {
 
+            Log.d("FILE_NUMBER", String.valueOf(fileNames.size()));
+
             iterator = fileNames.listIterator();
+            integerListIterator = scores.listIterator();
 
             galleryView = (ImageView) findViewById(R.id.gallery);
             clearButton = (Button) findViewById(R.id.clear_button);
+            currentScore = (TextView) findViewById(R.id.currentScore);
+            currentScore.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
+
+            //TODO ポイント表示のためのTextView追加
 
             if (iterator.hasNext()) {
 
@@ -242,8 +258,23 @@ public class IndexActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                int point = integerListIterator.next();
+
+                currentScore.setText(String.valueOf(point) + "pt");
                 galleryView.setImageBitmap(bitmap);
                 numberTextView.setText(String.valueOf(iterator.nextIndex()) + "/" + fileNames.size());
+
+                if (point >= 20 && point < 30) {
+                    currentScore.setTextColor(Color.BLUE);
+                } else if (point >= 30 && point < 40) {
+                    currentScore.setTextColor(Color.GREEN);
+                } else if (point >= 40 && point < 50) {
+                    currentScore.setTextColor(Color.YELLOW);
+                } else if (point >= 50 && point < 60) {
+                    currentScore.setTextColor(Color.RED);
+                }
+
             }
 
             textView.setVisibility(View.GONE);
@@ -254,6 +285,7 @@ public class IndexActivity extends AppCompatActivity {
             clearButton.setVisibility(View.VISIBLE);
             galleryView.setVisibility(View.VISIBLE);
             numberTextView.setVisibility(View.VISIBLE);
+            currentScore.setVisibility(View.VISIBLE);
 
             Toast.makeText(this, "スワイプして写真を見る", Toast.LENGTH_LONG).show();
 
@@ -272,6 +304,7 @@ public class IndexActivity extends AppCompatActivity {
         lookButton.setVisibility(View.VISIBLE);
         clearButton.setVisibility(View.GONE);
         numberTextView.setVisibility(View.GONE);
+        currentScore.setVisibility(View.GONE);
     }
 
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
@@ -299,22 +332,51 @@ public class IndexActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
+                        int point = integerListIterator.next();
+
+                        currentScore.setText(String.valueOf(point) + "pt");
                         numberTextView.setText(String.valueOf(iterator.nextIndex()) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
+
+                        if (point >= 20 && point < 30) {
+                            currentScore.setTextColor(Color.BLUE);
+                        } else if (point >= 30 && point < 40) {
+                            currentScore.setTextColor(Color.GREEN);
+                        } else if (point >= 40 && point < 50) {
+                            currentScore.setTextColor(Color.YELLOW);
+                        } else if (point >= 50 && point < 60) {
+                            currentScore.setTextColor(Color.RED);
+                        }
+
                     } else {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
                         try {
                             iterator = fileNames.listIterator();
+                            integerListIterator = scores.listIterator();
                             InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
                             bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
 
+                        int point = integerListIterator.next();
+
+                        currentScore.setText(String.valueOf(point) + "pt");
                         numberTextView.setText(String.valueOf(iterator.nextIndex()) + "/" + fileNames.size());
                         galleryView.setImageBitmap(bitmap);
+
+                        if (point >= 20 && point < 30) {
+                            currentScore.setTextColor(Color.BLUE);
+                        } else if (point >= 30 && point < 40) {
+                            currentScore.setTextColor(Color.GREEN);
+                        } else if (point >= 40 && point < 50) {
+                            currentScore.setTextColor(Color.YELLOW);
+                        } else if (point >= 50 && point < 60) {
+                            currentScore.setTextColor(Color.RED);
+                        }
+
                     }
                     return true;
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
@@ -324,7 +386,20 @@ public class IndexActivity extends AppCompatActivity {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
+                        int point = integerListIterator.previous();
+
+                        currentScore.setText(String.valueOf(point) + "pt");
                         numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
+
+                        if (point >= 20 && point < 30) {
+                            currentScore.setTextColor(Color.BLUE);
+                        } else if (point >= 30 && point < 40) {
+                            currentScore.setTextColor(Color.GREEN);
+                        } else if (point >= 40 && point < 50) {
+                            currentScore.setTextColor(Color.YELLOW);
+                        } else if (point >= 50 && point < 60) {
+                            currentScore.setTextColor(Color.RED);
+                        }
 
                         try {
                             InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
@@ -339,10 +414,24 @@ public class IndexActivity extends AppCompatActivity {
 
                     } else {
                         iterator = fileNames.listIterator(fileNames.size());
+                        integerListIterator = scores.listIterator(scores.size());
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
+                        int point = integerListIterator.previous();
+
                         numberTextView.setText(String.valueOf(iterator.previousIndex() + 1) + "/" + fileNames.size());
+                        currentScore.setText(String.valueOf(point) + "pt");
+
+                        if (point >= 20 && point < 30) {
+                            currentScore.setTextColor(Color.BLUE);
+                        } else if (point >= 30 && point < 40) {
+                            currentScore.setTextColor(Color.GREEN);
+                        } else if (point >= 40 && point < 50) {
+                            currentScore.setTextColor(Color.YELLOW);
+                        } else if (point >= 50 && point < 60) {
+                            currentScore.setTextColor(Color.RED);
+                        }
 
                         try {
                             InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
