@@ -246,7 +246,7 @@ public class IndexActivity extends AppCompatActivity {
             currentScore = (TextView) findViewById(R.id.currentScore);
             currentScore.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
 
-            //TODO ポイント表示のためのTextView追加
+            //対応する写真のポイントを表示する処理
 
             if (iterator.hasNext()) {
 
