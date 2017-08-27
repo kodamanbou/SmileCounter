@@ -370,8 +370,7 @@ public class IndexActivity extends AppCompatActivity {
                             File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
                             File image = new File(base, iterator.next());
                             bitmap = BitmapFactory.decodeFile(image.getPath());
-                            //TODO 後で消す！！
-                            Log.d("NENNNOTAME", image.getPath());
+                            Log.d("IMAGE_FILE_PATH", image.getPath());
                         }
 
                         int point = integerListIterator.next();
