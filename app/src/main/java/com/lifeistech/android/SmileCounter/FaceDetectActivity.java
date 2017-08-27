@@ -7,17 +7,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,14 +83,14 @@ public class FaceDetectActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 19) {
             try {
                 InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
-                bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.6f, new Matrix());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
             File image = new File(base, "camera_test.jpg");
-            bitmap = BitmapFactory.decodeFile(image.getPath());
+            bitmap = resizeBitmap(BitmapFactory.decodeFile(image.getPath()), 0.6f, getRotatedMatrix(image.getPath()));
         }
 
         if (bitmap == null) {
@@ -207,4 +212,103 @@ public class FaceDetectActivity extends AppCompatActivity {
         intent.putExtra("SCORE_IMAGE", "smilecounter_" + s + ".jpg");
         startActivity(intent);
     }
+
+    private Matrix getRotatedMatrix(String path){
+        ExifInterface exifInterface = null;
+        Matrix matrix = new Matrix();
+
+        try {
+            exifInterface = new ExifInterface(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return matrix;
+        }
+
+        // 画像の向きを取得
+        int orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+
+        // 画像を回転させる処理をマトリクスに追加
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_UNDEFINED:
+                break;
+            case ExifInterface.ORIENTATION_NORMAL:
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                // 水平方向にリフレクト
+                matrix.postScale(-1f, 1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                // 180度回転
+                matrix.postRotate(180f);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                // 垂直方向にリフレクト
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                // 反時計回り90度回転
+                matrix.postRotate(90f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                // 時計回り90度回転し、垂直方向にリフレクト
+                matrix.postRotate(-90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                // 反時計回り90度回転し、垂直方向にリフレクト
+                matrix.postRotate(90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                // 反時計回りに270度回転（時計回りに90度回転）
+                matrix.postRotate(-90f);
+                break;
+        }
+        return matrix;
+    }
+
+    private Bitmap resizeBitmap(Bitmap src, float scale, Matrix matrix) {
+
+        final int dispWidth = 480,
+                dispHight = 800;
+
+        int srcWidth = src.getWidth(); // 元画像のwidth
+        int srcHeight = src.getHeight(); // 元画像のheight
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point p = new Point();
+        display.getSize(p);
+
+        Log.d("BITMAP_SIZE", "w : " + String.valueOf(srcWidth) + "h : " + String.valueOf(srcHeight));
+        Log.d("DISPLAY_SIZE", "w : " + String.valueOf(p.x) + " " + "h : " + String.valueOf(p.y));
+
+        // 画面サイズを取得する
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        float screenWidth = (float) metrics.widthPixels;
+        float screenHeight = (float) metrics.heightPixels;
+        Log.d("SCREEN_SIZE", "screenWidth = " + String.valueOf(screenWidth)
+                + " px, screenHeight = " + String.valueOf(screenHeight) + " px");
+
+        float widthScale = screenWidth * scale / srcWidth;
+        float heightScale = screenHeight * scale / srcHeight;
+
+        if (widthScale > heightScale) {
+            matrix.postScale(heightScale, heightScale);
+        } else {
+            matrix.postScale(widthScale, widthScale);
+        }
+        // リサイズ
+        Bitmap dst = Bitmap.createBitmap(src, 0, 0, srcWidth, srcHeight, matrix, true);
+        int dstWidth = dst.getWidth(); // 変更後画像のwidth
+        int dstHeight = dst.getHeight(); // 変更後画像のheight
+
+        Log.d("DST_BITMAP_SIZE", "w : " + String.valueOf(dstWidth) + ", h : " + String.valueOf(dstHeight));
+
+        src = null;
+        return dst;
+    }
+
 }
