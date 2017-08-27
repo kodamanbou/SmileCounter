@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -74,15 +75,17 @@ public class FaceDetectActivity extends AppCompatActivity {
         File file = new File(getFilesDir(), "SmileCounter");
         File imageFile = new File(file, "camera_test.jpg");
 
-        String bitUriString = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
-
-        Log.d("Bitmap_Test", bitUriString);
-
-        try {
-            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
-            bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Build.VERSION.SDK_INT >= 19) {
+            try {
+                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                bitmap = BitmapFactory.decodeStream(new BufferedInputStream(stream));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+            File image = new File(base, "camera_test.jpg");
+            bitmap = BitmapFactory.decodeFile(image.getPath());
         }
 
         if (bitmap == null) {
@@ -117,21 +120,16 @@ public class FaceDetectActivity extends AppCompatActivity {
             if (smilingProbability > 0.3f && smilingProbability <= 0.5f) {
                 score = score + 5;
                 j++;
-                if (j >= 3) {
-                    score += score / 2;
-                }
             } else if (smilingProbability > 0.5f && smilingProbability <= 0.7f) {
                 score = score + 7;
                 j++;
-                if (j >= 3) {
-                    score += score / 2;
-                }
             } else if (smilingProbability > 0.7f) {
                 score = score + 10;
                 j++;
-                if (j >= 3) {
-                    score += score / 2;
-                }
+            }
+
+            if (j >= 3) {
+                score += score / 2;
             }
 
             tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
@@ -153,18 +151,34 @@ public class FaceDetectActivity extends AppCompatActivity {
         String s = sdf.format(date);
 
         String bitmapPath = "";
-        try {
-            File file = new File(getFilesDir(), "SmileCounter");
-            File imageFile = new File(file, "smilecounter_" + s + ".jpg");
-            bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
 
-            OutputStream stream = null;
-            stream = getContentResolver().openOutputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
-            stream.write(bytes);
-            stream.flush();
-            stream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Build.VERSION.SDK_INT >= 19) {
+            try {
+                File file = new File(getFilesDir(), "SmileCounter");
+                File imageFile = new File(file, "smilecounter_" + s + ".jpg");
+                bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
+
+                OutputStream stream = null;
+                stream = getContentResolver().openOutputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                stream.write(bytes);
+                stream.flush();
+                stream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+            File image = new File(file, "smilecounter_" + s + ".jpg");
+
+            try {
+                FileOutputStream fos = new FileOutputStream(image);
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
 
         files.add("smilecounter_" + s + ".jpg");

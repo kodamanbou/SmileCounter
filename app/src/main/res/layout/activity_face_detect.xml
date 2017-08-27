@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="0pt"
-            android:textSize="24sp" />
+            android:textColor="@color/textViewColor"
+            android:textSize="30sp" />
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"

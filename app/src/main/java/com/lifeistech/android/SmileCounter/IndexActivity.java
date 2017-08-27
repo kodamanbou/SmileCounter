@@ -189,20 +189,29 @@ public class IndexActivity extends AppCompatActivity {
     public void picture(View v) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        //FileProvider で保存・参照する
-        File file = new File(getFilesDir(), "SmileCounter");
-        File imageFile = new File(file, "camera_test.jpg");
 
-        if (!file.exists()) {
-            file.mkdirs();
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            //FileProvider で保存・参照する
+            File file = new File(getFilesDir(), "SmileCounter");
+            File imageFile = new File(file, "camera_test.jpg");
+
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+
+            selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile);
+
+            Log.d("selectedImageUri", selectedImageUri.getPath());
+
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri);
+            startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
+        } else {
+            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+            File image = new File(base, "camera_test.jpg");
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
+            startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
         }
-
-        selectedImageUri = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile);
-
-        Log.d("selectedImageUri", selectedImageUri.getPath());
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImageUri);
-        startActivityForResult(intent, REQUEST_CAPTURE_IMAGE);
 
     }
 
@@ -218,15 +227,33 @@ public class IndexActivity extends AppCompatActivity {
         fileNames = new ArrayList<>();
         scores = new ArrayList<>();
 
-        SharedPreferences preferences = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
-        String names = preferences.getString(FILE_NAME, null);
+        if (Build.VERSION.SDK_INT >= 19) {
+            SharedPreferences preferences = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+            String names = preferences.getString(FILE_NAME, null);
 
-        if (names != null) {
-            String[] files = names.split(",");
-            for (String s : files) {
-                fileNames.add(s);
-                Log.d("JPEG_DIRECTORY", s);
+            if (names != null) {
+                String[] files = names.split(",");
+                for (String s : files) {
+                    fileNames.add(s);
+                    Log.d("JPEG_DIRECTORY", s);
+                }
             }
+        } else {
+            File[] files;
+
+            files = new File(Environment.getExternalStorageDirectory(), "SmileCounter").listFiles();
+
+            if (files != null) {
+                for(int i = 0; i < files.length; i++){
+                    if(files[i].isFile() && files[i].getName().startsWith("smilecounter_")){
+                        fileNames.add(files[i].getName());
+                    }
+                }
+                Log.d("FILES_NULL?", "NON NULL!!!!!");
+            } else {
+                Log.d("FILES_NULL?", "NULL!!!!!");
+            }
+
         }
 
         for (String s : fileNames) {
@@ -252,11 +279,18 @@ public class IndexActivity extends AppCompatActivity {
 
                 Bitmap bitmap = null;
 
-                try {
-                    InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
-                    bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (Build.VERSION.SDK_INT >= 19) {
+
+                    try {
+                        InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                        bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+                    File image = new File(base, iterator.next());
+                    bitmap = BitmapFactory.decodeFile(image.getPath());
                 }
 
                 int point = integerListIterator.next();
@@ -325,11 +359,19 @@ public class IndexActivity extends AppCompatActivity {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
-                        try {
-                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
-                            bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            try {
+                                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+                            File image = new File(base, iterator.next());
+                            bitmap = BitmapFactory.decodeFile(image.getPath());
+                            //TODO 後で消す！！
+                            Log.d("NENNNOTAME", image.getPath());
                         }
 
                         int point = integerListIterator.next();
@@ -352,13 +394,21 @@ public class IndexActivity extends AppCompatActivity {
                         Bitmap bitmap = null;
                         File file = new File(getFilesDir(), "SmileCounter");
 
-                        try {
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            try {
+                                iterator = fileNames.listIterator();
+                                integerListIterator = scores.listIterator();
+                                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
+                                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
                             iterator = fileNames.listIterator();
                             integerListIterator = scores.listIterator();
-                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.next())));
-                            bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+                            File image = new File(base, iterator.next());
+                            bitmap = BitmapFactory.decodeFile(image.getPath());
                         }
 
                         int point = integerListIterator.next();
@@ -401,14 +451,20 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.RED);
                         }
 
-                        try {
-                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
-                            bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            try {
+                                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
+                                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
-                        Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
+                            Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
+                        } else {
+                            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+                            File image = new File(base, iterator.previous());
+                            bitmap = BitmapFactory.decodeFile(image.getPath());
+                        }
 
                         galleryView.setImageBitmap(bitmap);
 
@@ -433,14 +489,20 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.RED);
                         }
 
-                        try {
-                            InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
-                            bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            try {
+                                InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(getApplicationContext(), "com.lifeistech.android.SmileCounter" + ".fileprovider", new File(file, iterator.previous())));
+                                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
-                        Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
+                            Log.d("ITERATOR_TEST", "Index=" + String.valueOf(iterator.previousIndex()));
+                        } else {
+                            File base = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+                            File image = new File(base, iterator.previous());
+                            bitmap = BitmapFactory.decodeFile(image.getPath());
+                        }
 
                         galleryView.setImageBitmap(bitmap);
                     }
