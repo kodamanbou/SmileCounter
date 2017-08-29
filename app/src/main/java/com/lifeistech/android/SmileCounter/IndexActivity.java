@@ -208,10 +208,10 @@ public class IndexActivity extends AppCompatActivity {
             textView.setTextColor(Color.parseColor("#ffa726"));
         } else if (highestScore >= 50 && highestScore < 60) {
             textView.setTextColor(Color.parseColor("#d500f9"));
-        } else if (highestScore >= 100) {
+        } else if (highestScore >= 60) {
             textView.setTextColor(Color.parseColor("#f44336"));
         } else {
-            textView.setTextColor(Color.parseColor("424242"));
+            textView.setTextColor(Color.parseColor("#424242"));
         }
 
     }
@@ -337,7 +337,7 @@ public class IndexActivity extends AppCompatActivity {
                     currentScore.setTextColor(Color.parseColor("#ffa726"));
                 } else if (point >= 50 && point < 60) {
                     currentScore.setTextColor(Color.parseColor("#d500f9"));
-                } else if (point >= 100) {
+                } else if (point >= 60) {
                     currentScore.setTextColor(Color.parseColor("#f44336"));
                 } else {
                     currentScore.setTextColor(Color.parseColor("#424242"));
@@ -421,7 +421,7 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.parseColor("#ffa726"));
                         } else if (point >= 50 && point < 60) {
                             currentScore.setTextColor(Color.parseColor("#d500f9"));
-                        } else if (point >= 100) {
+                        } else if (point >= 60) {
                             currentScore.setTextColor(Color.parseColor("#f44336"));
                         } else {
                             currentScore.setTextColor(Color.parseColor("#424242"));
@@ -462,7 +462,7 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.parseColor("#ffa726"));
                         } else if (point >= 50 && point < 60) {
                             currentScore.setTextColor(Color.parseColor("#d500f9"));
-                        } else if (point >= 100) {
+                        } else if (point >= 60) {
                             currentScore.setTextColor(Color.parseColor("#f44336"));
                         } else {
                             currentScore.setTextColor(Color.parseColor("#424242"));
@@ -490,7 +490,7 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.parseColor("#ffa726"));
                         } else if (point >= 50 && point < 60) {
                             currentScore.setTextColor(Color.parseColor("#d500f9"));
-                        } else if (point >= 100) {
+                        } else if (point >= 60) {
                             currentScore.setTextColor(Color.parseColor("#f44336"));
                         } else {
                             currentScore.setTextColor(Color.parseColor("#424242"));
@@ -532,7 +532,7 @@ public class IndexActivity extends AppCompatActivity {
                             currentScore.setTextColor(Color.parseColor("#ffa726"));
                         } else if (point >= 50 && point < 60) {
                             currentScore.setTextColor(Color.parseColor("#d500f9"));
-                        } else if (point >= 100) {
+                        } else if (point >= 60) {
                             currentScore.setTextColor(Color.parseColor("#f44336"));
                         } else {
                             currentScore.setTextColor(Color.parseColor("#424242"));

@@ -143,6 +143,20 @@ public class FaceDetectActivity extends AppCompatActivity {
         imageView.setImageDrawable(new BitmapDrawable(getResources(), tempBitmap));
         textView.setText(String.valueOf(score) + "pt");
 
+        if (score >= 20 && score < 30) {
+            textView.setTextColor(Color.parseColor("#00e5ff"));
+        } else if (score >= 30 && score < 40) {
+            textView.setTextColor(Color.parseColor("#388e3c"));
+        } else if (score >= 40 && score < 50) {
+            textView.setTextColor(Color.parseColor("#ffa726"));
+        } else if (score >= 50 && score < 60) {
+            textView.setTextColor(Color.parseColor("#d500f9"));
+        } else if (score >= 60) {
+            textView.setTextColor(Color.parseColor("#f44336"));
+        } else {
+            textView.setTextColor(Color.parseColor("#424242"));
+        }
+
     }
 
     public void backToTitle(View v) {
