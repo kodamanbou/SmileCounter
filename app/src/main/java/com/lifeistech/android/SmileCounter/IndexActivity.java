@@ -47,15 +47,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 
 public class IndexActivity extends AppCompatActivity {
 
     private final String PREF_KEY = "DataSave";
     private final String FILE_NAME = "FileName";
+    private final String DAILY_BONUS = "DailyBonus";
+    private final String BONUS = "Bonus";
 
     // 記録の表示及びその他の機能追加
     int score;
@@ -136,6 +142,63 @@ public class IndexActivity extends AppCompatActivity {
         SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
         int highestScore = data.getInt("Score", 0);
         String bitString = data.getString("ScoreImage", "");
+
+        Date today = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
+        String previous = data.getString(DAILY_BONUS, null);
+
+        if (previous != null) {
+
+            try {
+
+                Date before = sdf.parse(previous);
+
+                int bonus = data.getInt(BONUS, 0);
+                bonus++;
+
+                Calendar now = Calendar.getInstance();
+                now.setTime(today);
+                int nowYear = now.get(Calendar.YEAR);
+                int nowMonth = now.get(Calendar.MONTH);
+                int nowDate = now.get(Calendar.DATE);
+
+                Calendar past = Calendar.getInstance();
+                past.setTime(before);
+                int pastYear = past.get(Calendar.YEAR);
+                int pastMonth = past.get(Calendar.MONTH);
+                int pastDate = past.get(Calendar.DATE);
+
+                if (nowYear - pastYear == 1 && nowMonth - pastMonth == 1 && nowDate - pastDate == 1) {
+                    if (score != 0) {
+                        if (bonus >= 3 && bonus < 7) {
+                            score += 5;
+                        } else if (bonus >= 7 && bonus < 10) {
+                            score += 7;
+                        } else if (bonus >= 14) {
+                            score += 15;
+                        }
+                    }
+
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putInt(BONUS, bonus);
+                    editor.putString(DAILY_BONUS, sdf.format(today));
+                    editor.apply();
+                } else {
+                    SharedPreferences.Editor editor = data.edit();
+                    editor.putInt(BONUS, 0);
+                    editor.putString(DAILY_BONUS, sdf.format(today));
+                    editor.apply();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            SharedPreferences.Editor editor = data.edit();
+            editor.putString(DAILY_BONUS, sdf.format(today));
+            editor.apply();
+        }
 
         if (highestScore < score) {
             SharedPreferences.Editor editor = data.edit();
@@ -220,7 +283,6 @@ public class IndexActivity extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 
-
         if (Build.VERSION.SDK_INT >= 19) {
             //FileProvider で保存・参照する
             File file = new File(getFilesDir(), "SmileCounter");
@@ -274,8 +336,8 @@ public class IndexActivity extends AppCompatActivity {
             files = new File(Environment.getExternalStorageDirectory(), "SmileCounter").listFiles();
 
             if (files != null) {
-                for(int i = 0; i < files.length; i++){
-                    if(files[i].isFile() && files[i].getName().startsWith("smilecounter_")){
+                for (int i = 0; i < files.length; i++) {
+                    if (files[i].isFile() && files[i].getName().startsWith("smilecounter_")) {
                         fileNames.add(files[i].getName());
                     }
                 }
@@ -581,7 +643,7 @@ public class IndexActivity extends AppCompatActivity {
     private Bitmap resizeBitmap(Bitmap src, float scale, Matrix matrix) {
 
         final int dispWidth = 480,
-                  dispHight = 800;
+                dispHight = 800;
 
         Matrix mat = new Matrix(matrix);
 
@@ -622,7 +684,7 @@ public class IndexActivity extends AppCompatActivity {
         return dst;
     }
 
-    private Matrix getRotatedMatrix(String path){
+    private Matrix getRotatedMatrix(String path) {
         ExifInterface exifInterface = null;
         Matrix matrix = new Matrix();
 
