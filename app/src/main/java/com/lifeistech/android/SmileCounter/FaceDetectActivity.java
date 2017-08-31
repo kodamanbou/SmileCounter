@@ -24,6 +24,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -51,6 +52,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
     private ImageView imageView;
     private TextView textView;
+    private Button shareButton;
     int score = 0;
     Bitmap bitmap;
 
@@ -58,6 +60,8 @@ public class FaceDetectActivity extends AppCompatActivity {
     private final String FILE_NAME = "FileName";
 
     private static ArrayList<String> files = new ArrayList<>();
+
+    private String thisFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +116,7 @@ public class FaceDetectActivity extends AppCompatActivity {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
         SparseArray<Face> faces = detector.detect(frame);
 
-        for(int i=0; i<faces.size(); i++) {
+        for (int i = 0; i < faces.size(); i++) {
             int j = 0;
             Face thisFace = faces.valueAt(i);
             float x1 = thisFace.getPosition().x;
@@ -157,10 +161,6 @@ public class FaceDetectActivity extends AppCompatActivity {
             textView.setTextColor(Color.parseColor("#424242"));
         }
 
-    }
-
-    public void backToTitle(View v) {
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] bytes = baos.toByteArray();
@@ -173,12 +173,12 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= 19) {
             try {
-                File file = new File(getFilesDir(), "SmileCounter");
-                File imageFile = new File(file, "smilecounter_" + s + ".jpg");
-                bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile).getPath();
+                File file1 = new File(getFilesDir(), "SmileCounter");
+                File imageFile1 = new File(file1, "smilecounter_" + s + ".jpg");
+                bitmapPath = FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile1).getPath();
 
                 OutputStream stream = null;
-                stream = getContentResolver().openOutputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
+                stream = getContentResolver().openOutputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile1));
                 stream.write(bytes);
                 stream.flush();
                 stream.close();
@@ -186,11 +186,11 @@ public class FaceDetectActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            File file = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
-            File image = new File(file, "smilecounter_" + s + ".jpg");
+            File file1 = new File(Environment.getExternalStorageDirectory(), "SmileCounter");
+            File image1 = new File(file1, "smilecounter_" + s + ".jpg");
 
             try {
-                FileOutputStream fos = new FileOutputStream(image);
+                FileOutputStream fos = new FileOutputStream(image1);
                 fos.write(bytes);
                 fos.flush();
                 fos.close();
@@ -201,6 +201,7 @@ public class FaceDetectActivity extends AppCompatActivity {
         }
 
         files.add("smilecounter_" + s + ".jpg");
+        thisFile = "smilecounter_" + s + ".jpg";
 
         SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = data.edit();
@@ -221,13 +222,17 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         editor.apply();
 
+    }
+
+    public void backToTitle(View v) {
+
         Intent intent = new Intent(this, IndexActivity.class);
         intent.putExtra("SCORE", score);
-        intent.putExtra("SCORE_IMAGE", "smilecounter_" + s + ".jpg");
+        intent.putExtra("SCORE_IMAGE", thisFile);
         startActivity(intent);
     }
 
-    private Matrix getRotatedMatrix(String path){
+    private Matrix getRotatedMatrix(String path) {
         ExifInterface exifInterface = null;
         Matrix matrix = new Matrix();
 
@@ -323,6 +328,14 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         src = null;
         return dst;
+    }
+
+    public void share(View v) {
+
+        Intent intent = new Intent(this, ShareActivity.class);
+        intent.putExtra("FileName", thisFile);
+        startActivity(intent);
+
     }
 
 }

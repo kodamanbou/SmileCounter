@@ -125,7 +125,7 @@ public class IndexActivity extends AppCompatActivity {
                     File imageFile = new File(file, bitPath);
                     InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
                     bitmap = BitmapFactory.decodeStream(stream);
-                    bitmap = resizeBitmap(bitmap, 0.6f, new Matrix());
+                    bitmap = resizeBitmap(bitmap, 0.55f, new Matrix());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
