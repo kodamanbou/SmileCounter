@@ -62,6 +62,7 @@ public class IndexActivity extends AppCompatActivity {
     private final String FILE_NAME = "FileName";
     private final String DAILY_BONUS = "DailyBonus";
     private final String BONUS = "Bonus";
+    private final String TOTAL_SCORE = "TotalScore";
 
     // 記録の表示及びその他の機能追加
     int score;
@@ -75,6 +76,7 @@ public class IndexActivity extends AppCompatActivity {
     private TextView labelTextView;
     private TextView numberTextView;
     private TextView currentScore;
+    private TextView totalTextView;
 
     private ListIterator<String> iterator;
     private ArrayList<String> fileNames;
@@ -104,10 +106,12 @@ public class IndexActivity extends AppCompatActivity {
         lookButton = (Button) findViewById(R.id.lookPicture);
         labelTextView = (TextView) findViewById(R.id.textView);
         numberTextView = (TextView) findViewById(R.id.numberText);
+        totalTextView = (TextView) findViewById(R.id.totalText);
 
         numberTextView.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
         textView.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
         labelTextView.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
+        totalTextView.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
 
         gestureDetector = new GestureDetector(this, gestureListener);
 
@@ -142,6 +146,18 @@ public class IndexActivity extends AppCompatActivity {
         SharedPreferences data = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
         int highestScore = data.getInt("Score", 0);
         String bitString = data.getString("ScoreImage", "");
+
+        int total = data.getInt(TOTAL_SCORE, -1);
+
+        if (total == -1) {
+            SharedPreferences.Editor editor = data.edit();
+            editor.putInt(TOTAL_SCORE, score);
+            editor.apply();
+        } else {
+            SharedPreferences.Editor editor = data.edit();
+            editor.putInt(TOTAL_SCORE, total + score);
+            editor.apply();
+        }
 
         Date today = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.JAPAN);
@@ -261,17 +277,17 @@ public class IndexActivity extends AppCompatActivity {
             editor.apply();
         }
 
-        textView.setText(String.valueOf(highestScore) + "pt");
+        textView.setText(String.valueOf(total + score) + "pt");
 
-        if (highestScore >= 20 && highestScore < 30) {
+        if (total + score >= 20 && total + score < 30) {
             textView.setTextColor(Color.parseColor("#00e5ff"));
-        } else if (highestScore >= 30 && highestScore < 40) {
+        } else if (total + score >= 30 && total + score < 50) {
             textView.setTextColor(Color.parseColor("#388e3c"));
-        } else if (highestScore >= 40 && highestScore < 50) {
+        } else if (total + score >= 50 && total + score < 100) {
             textView.setTextColor(Color.parseColor("#ffa726"));
-        } else if (highestScore >= 50 && highestScore < 60) {
+        } else if (total + score >= 100 && total + score < 200) {
             textView.setTextColor(Color.parseColor("#d500f9"));
-        } else if (highestScore >= 60) {
+        } else if (total + score >= 200) {
             textView.setTextColor(Color.parseColor("#f44336"));
         } else {
             textView.setTextColor(Color.parseColor("#424242"));
@@ -318,6 +334,15 @@ public class IndexActivity extends AppCompatActivity {
 
         fileNames = new ArrayList<>();
         scores = new ArrayList<>();
+
+        SharedPreferences pref = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
+        int highestScore = pref.getInt("Score", -1);
+
+        if (highestScore == -1) {
+            textView.setText(String.valueOf(0) + "pt");
+        } else {
+            textView.setText(String.valueOf(highestScore) + "pt");
+        }
 
         if (Build.VERSION.SDK_INT >= 19) {
             SharedPreferences preferences = getSharedPreferences(PREF_KEY, Context.MODE_PRIVATE);
@@ -412,10 +437,12 @@ public class IndexActivity extends AppCompatActivity {
             button.setVisibility(View.GONE);
             imageView.setVisibility(View.GONE);
             lookButton.setVisibility(View.GONE);
+            totalTextView.setVisibility(View.GONE);
             clearButton.setVisibility(View.VISIBLE);
             galleryView.setVisibility(View.VISIBLE);
             numberTextView.setVisibility(View.VISIBLE);
             currentScore.setVisibility(View.VISIBLE);
+            labelTextView.setVisibility(View.VISIBLE);
 
             Toast.makeText(this, "スワイプして写真を見る", Toast.LENGTH_LONG).show();
 
@@ -432,9 +459,11 @@ public class IndexActivity extends AppCompatActivity {
         button.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.VISIBLE);
         lookButton.setVisibility(View.VISIBLE);
+        totalTextView.setVisibility(View.VISIBLE);
         clearButton.setVisibility(View.GONE);
         numberTextView.setVisibility(View.GONE);
         currentScore.setVisibility(View.GONE);
+        labelTextView.setVisibility(View.GONE);
     }
 
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
