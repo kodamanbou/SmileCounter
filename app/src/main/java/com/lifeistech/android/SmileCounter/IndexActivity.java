@@ -153,10 +153,12 @@ public class IndexActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = data.edit();
             editor.putInt(TOTAL_SCORE, score);
             editor.apply();
+            textView.setText(String.valueOf(score) + "pt");
         } else {
             SharedPreferences.Editor editor = data.edit();
             editor.putInt(TOTAL_SCORE, total + score);
             editor.apply();
+            textView.setText(String.valueOf(total + score) + "pt");
         }
 
         Date today = new Date();
@@ -276,8 +278,6 @@ public class IndexActivity extends AppCompatActivity {
             editor.putString("ScoreImage", bitString);
             editor.apply();
         }
-
-        textView.setText(String.valueOf(total + score) + "pt");
 
         if (total + score >= 20 && total + score < 30) {
             textView.setTextColor(Color.parseColor("#00e5ff"));
@@ -432,8 +432,7 @@ public class IndexActivity extends AppCompatActivity {
 
             }
 
-            textView.setVisibility(View.GONE);
-            labelTextView.setVisibility(View.GONE);
+            textView.setVisibility(View.VISIBLE);
             button.setVisibility(View.GONE);
             imageView.setVisibility(View.GONE);
             lookButton.setVisibility(View.GONE);
@@ -455,7 +454,7 @@ public class IndexActivity extends AppCompatActivity {
     public void clear(View v) {
         galleryView.setVisibility(View.GONE);
         textView.setVisibility(View.VISIBLE);
-        labelTextView.setVisibility(View.VISIBLE);
+        labelTextView.setVisibility(View.GONE);
         button.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.VISIBLE);
         lookButton.setVisibility(View.VISIBLE);
@@ -463,7 +462,6 @@ public class IndexActivity extends AppCompatActivity {
         clearButton.setVisibility(View.GONE);
         numberTextView.setVisibility(View.GONE);
         currentScore.setVisibility(View.GONE);
-        labelTextView.setVisibility(View.GONE);
     }
 
     private final GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
