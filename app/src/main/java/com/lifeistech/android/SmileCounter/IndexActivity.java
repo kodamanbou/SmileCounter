@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lifeistech.android.SmileCounter.R;
+import com.twitter.sdk.android.core.Twitter;
 
 import java.io.BufferedInputStream;
 import java.io.File;
