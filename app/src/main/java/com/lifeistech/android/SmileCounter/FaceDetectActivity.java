@@ -334,6 +334,7 @@ public class FaceDetectActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, ShareActivity.class);
         intent.putExtra("FileName", thisFile);
+        intent.putExtra("Point", score);
         startActivity(intent);
 
     }

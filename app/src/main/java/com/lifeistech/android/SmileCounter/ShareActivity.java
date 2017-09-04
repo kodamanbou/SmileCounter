@@ -2,6 +2,7 @@ package com.lifeistech.android.SmileCounter;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -34,14 +35,18 @@ import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 public class ShareActivity extends AppCompatActivity {
 
     private Button shareTweetButton;
     private ShareButton shareButton;
+    private Button shareInstagramButton;
 
     private String fileName;
     private Uri selectedImageUri;
+
+    private int score;
 
     private Bitmap image;
 
@@ -56,11 +61,14 @@ public class ShareActivity extends AppCompatActivity {
 
         shareTweetButton = (Button) findViewById(R.id.twitterButton);
         shareButton = (ShareButton) findViewById(R.id.facebookShare);
+        shareInstagramButton = (Button) findViewById(R.id.instagramButton);
 
         shareTweetButton.setText("Twitter");
+        shareInstagramButton.setText("Instagram");
 
         Intent intent = getIntent();
         fileName = intent.getStringExtra("FileName");
+        score = intent.getIntExtra("Point", 0);
 
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
@@ -115,7 +123,7 @@ public class ShareActivity extends AppCompatActivity {
         Twitter.initialize(this);
 
         TweetComposer.Builder builder = new TweetComposer.Builder(this)
-                .text("#SmileCounter")
+                .text("#SmileCounter " + String.valueOf(score) + "pt !!")
                 .image(selectedImageUri);
         builder.show();
     }
@@ -134,6 +142,37 @@ public class ShareActivity extends AppCompatActivity {
             app_installed = false;
         }
         return app_installed;
+    }
+
+    public void shareInstagram(View v) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setData(selectedImageUri);
+        intent.setType("image/jpg");
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        PackageManager pm = getPackageManager();
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        String className = null;
+        String packegeName = null;
+        for (ResolveInfo info : resolveInfos) {
+            if ("Instagram".equals(info.loadLabel(pm)) || "instagram".equals(info.loadLabel(pm))) {
+                className = info.activityInfo.name;
+                packegeName = info.activityInfo.packageName;
+                break;
+            }
+        }
+
+        if (className != null && packegeName != null) {
+            intent.setClassName(packegeName, className);
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("image/jpg");
+            intent.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
+            startActivity(intent);
+        } else {
+            //Instagramをインストールしてもらう
+            Toast.makeText(this, "Instagramをインストールしてください", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
