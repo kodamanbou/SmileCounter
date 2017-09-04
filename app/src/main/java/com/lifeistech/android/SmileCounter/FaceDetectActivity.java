@@ -87,7 +87,7 @@ public class FaceDetectActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 19) {
             try {
                 InputStream stream = getContentResolver().openInputStream(FileProvider.getUriForFile(this, "com.lifeistech.android.SmileCounter" + ".fileprovider", imageFile));
-                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.6f, new Matrix());
+                bitmap = resizeBitmap(BitmapFactory.decodeStream(new BufferedInputStream(stream)), 0.55f, new Matrix());
             } catch (Exception e) {
                 e.printStackTrace();
             }

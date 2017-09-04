@@ -41,22 +41,22 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         app:layout_constraintVertical_bias="0.157" />
 
-    <Button
-        android:id="@+id/facebookButton"
+    <com.facebook.share.widget.ShareButton
+        android:id="@+id/facebookShare"
         android:layout_width="250dp"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/com_facebook_button_background"
         android:onClick="shareFacebook"
-        android:text="Button"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/twitterButton"
-        app:layout_constraintVertical_bias="0.208" />
+        app:layout_constraintVertical_bias="0.23" />
 
 
 </android.support.constraint.ConstraintLayout>
