@@ -8,7 +8,7 @@
     tools:context="com.lifeistech.android.SmileCounter.ShareActivity">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/shareText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -38,8 +38,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.157" />
+        app:layout_constraintTop_toBottomOf="@+id/shareText"
+        app:layout_constraintVertical_bias="0.101" />
 
     <com.facebook.share.widget.ShareButton
         android:id="@+id/facebookShare"
@@ -56,7 +56,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/twitterButton"
-        app:layout_constraintVertical_bias="0.23" />
+        app:layout_constraintVertical_bias="0.204" />
 
     <Button
         android:id="@+id/instagramButton"
@@ -73,7 +73,22 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/facebookShare"
-        app:layout_constraintVertical_bias="0.418" />
+        app:layout_constraintVertical_bias="0.356" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/sample"
+        android:text="戻る"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instagramButton" />
 
 
 </android.support.constraint.ConstraintLayout>

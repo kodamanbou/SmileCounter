@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -42,6 +44,7 @@ public class ShareActivity extends AppCompatActivity {
     private Button shareTweetButton;
     private ShareButton shareButton;
     private Button shareInstagramButton;
+    private TextView shareTextView;
 
     private String fileName;
     private Uri selectedImageUri;
@@ -62,11 +65,14 @@ public class ShareActivity extends AppCompatActivity {
         shareTweetButton = (Button) findViewById(R.id.twitterButton);
         shareButton = (ShareButton) findViewById(R.id.facebookShare);
         shareInstagramButton = (Button) findViewById(R.id.instagramButton);
+        shareTextView = (TextView) findViewById(R.id.shareText);
 
         shareTweetButton.setText("Twitter");
         shareTweetButton.setAllCaps(false);
         shareInstagramButton.setText("Instagram");
         shareInstagramButton.setAllCaps(false);
+
+        shareTextView.setTypeface(Typeface.createFromAsset(getAssets(), "JiyunoTsubasa.ttf"));
 
         Intent intent = getIntent();
         fileName = intent.getStringExtra("FileName");
@@ -110,6 +116,7 @@ public class ShareActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        //Facebookの投稿準備
         if (ShareDialog.canShow(SharePhotoContent.class)) {
             SharePhoto photo = new SharePhoto.Builder().setBitmap(image).build();
 
@@ -181,6 +188,12 @@ public class ShareActivity extends AppCompatActivity {
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void backToTitle(View v) {
+
+        Intent intent = new Intent(this, IndexActivity.class);
+        startActivity(intent);
     }
 
 }
