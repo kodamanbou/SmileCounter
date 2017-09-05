@@ -191,7 +191,6 @@ public class ShareActivity extends AppCompatActivity {
     }
 
     public void backToTitle(View v) {
-
         Intent intent = new Intent(this, IndexActivity.class);
         startActivity(intent);
     }
