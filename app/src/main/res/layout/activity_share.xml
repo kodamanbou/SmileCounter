@@ -66,7 +66,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/twwwww"
+        android:background="@drawable/sample2"
         android:onClick="shareInstagram"
         android:text="Instagram"
         app:layout_constraintBottom_toBottomOf="parent"

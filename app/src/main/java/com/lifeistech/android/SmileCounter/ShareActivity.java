@@ -64,7 +64,9 @@ public class ShareActivity extends AppCompatActivity {
         shareInstagramButton = (Button) findViewById(R.id.instagramButton);
 
         shareTweetButton.setText("Twitter");
+        shareTweetButton.setAllCaps(false);
         shareInstagramButton.setText("Instagram");
+        shareInstagramButton.setAllCaps(false);
 
         Intent intent = getIntent();
         fileName = intent.getStringExtra("FileName");
